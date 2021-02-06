@@ -1,0 +1,29 @@
+{
+  "name": "loginbtn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html -p 8080",
+    "predeploy": "rm -rf dist && parcel build index.html --public-url /loginBtn/",
+    "deploy": "gh-pages -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wei30172/loginBtn.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wei30172/loginBtn/issues"
+  },
+  "homepage": "https://github.com/wei30172/loginBtn#readme",
+  "dependencies": {
+    "rxjs": "^6.6.3"
+  },
+  "devDependencies": {
+    "gh-pages": "^3.1.0",
+    "typescript": "^4.1.3"
+  }
+}
