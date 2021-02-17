@@ -8,17 +8,18 @@
 <body>
 	<div class="container">
 		<h3>計數器實作練習</h3>
-		<button id="start">Reset</button>
-		<button id="count">Count</button>
+		<button id="addButton">Add</button>
+		<button id="minusButton">Minus</button>
+		<button id="reset">Reset</button>
 		<button id="error">Error</button>
 		<button id="complete">Complete</button>
-	
-		<div id="status">目前狀態：</div>
-		<div id="currentCounter">目前計數：</div>
-		<div id="evenCounter">偶數計數：</div>
+		<br/>
+		目前計數：<span id="currentState">0</span>
+		<br/>
+		偶數計數：<span id="evenState">0</span>
 	</div>
 	<br/>
-	<div class="container">
+	<!-- <div class="container">
 		<h3>登入按鈕實作練習</h3>
 		<div class="wrapper">
 			<form class="form" novalidate>
@@ -33,8 +34,8 @@
 				<button disabled id="submit" type="button" class="btn">Submit</button>
 			</form>
 		</div>
-	</div>
+	</div> -->
 	<script src="./count.ts"></script>
-	<script src="./login.ts"></script>
+	<!-- <script src="./login.ts"></script> -->
 </body>
 </html>

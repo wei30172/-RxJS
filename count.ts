@@ -1,67 +1,62 @@
-import { fromEvent, Subject, Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Subject, fromEvent, merge } from 'rxjs';
+import { mapTo, scan, filter, } from 'rxjs/operators';
 
 // 取元素
-const startButton = document.querySelector('#start');
-const countButton = document.querySelector('#count');
+const addButton = document.querySelector('#addButton');
+const minusButton = document.querySelector('#minusButton');
+const resetButton = document.querySelector('#reset');
 const errorButton = document.querySelector('#error');
 const completeButton = document.querySelector('#complete');
+const currentState = document.querySelector('#currentState');
+const evenState = document.querySelector('#evenState');
 
-// 目前狀態
-const statusLabel = document.querySelector('#status');
-// 目前計數
-const currentCounterLabel = document.querySelector('#currentCounter');
-// 偶數計數
-const evenCounterLabel = document.querySelector('#evenCounter');
+// 建立可觀察的物件(Observable)
+const addClick$ = fromEvent(addButton, 'click').pipe(mapTo(1));
+const minusClick$ = fromEvent(minusButton, 'click').pipe(mapTo(-1));
+const resetButton$ = fromEvent(resetButton, 'click').pipe(mapTo(0));
+const clickCounter$ = merge(addClick$, minusClick$, resetButton$)
+  .pipe(
+    scan((total, value) => {return (value === 0) ? 0 : total + value }, 0)
+  );
+const errorButton$ = fromEvent(errorButton, 'click');
+const completeButton$ = fromEvent(completeButton, 'click');
 
+// 建立觀察者物件(Observer)
+const clickObserver = {
+  next: (result) => {
+    currentState.innerHTML = `${result}`;
+  },
+  error: (err) => { 
+    currentState.innerHTML = `err: ${err}`;
+  },
+  complete: () => {
+    currentState.innerHTML = 'complete';
+  }
+}
 
-// 計數器起始值
-let counter = 0;
-// 訂定subject(多個通知對象)，通知計數器值改變
-let counter$: Subject<number>;
+const evenObserver = {
+  next: (result) => {
+    evenState.innerHTML = `${result}`;
+  },
+  error: (err) => { 
+    evenState.innerHTML = `err: ${err}`;
+  },
+  complete: () => {
+    evenState.innerHTML = 'complete';
+  }
+}
 
-// 「開始新的計數器」按鈕事件訂閱
-fromEvent(startButton, 'click').subscribe(() => {
-  counter$ = new Subject();
-  counter = 0;
+// 建立主體物件(Subject)，可作為Observer及Observable
+const subject = new Subject<number>();
+clickCounter$.subscribe(subject);
 
-  statusLabel.innerHTML = '目前狀態：開始計數';
-
-  counter$.subscribe(data => {
-    currentCounterLabel.innerHTML = `目前計數：${data}`;
-  });
-
-  const evenCounter$ = counter$.pipe(filter(data => data % 2 === 0));
-  evenCounter$.subscribe(data => {
-    evenCounterLabel.innerHTML = `偶數計數：${data}`;
-  });
-
-  // 處理「顯示狀態」邏輯
-  counter$.subscribe({
-    error: message => {
-      statusLabel.innerHTML = `目前狀態：錯誤 -> ${message}`;
-    },
-    complete: () => {
-      statusLabel.innerHTML = '目前狀態：完成';
-    }
-  });
-
-  // 一開始就送出預設值
-  counter$.next(counter);
+// 建立訂閱物件(訂閱Observer，傳入Observer)
+const clickSub = subject.subscribe(clickObserver);
+const evenSub = subject.pipe(filter(result => result % 2 === 0))
+  .subscribe(evenObserver);
+const errorSub = errorButton$.subscribe(() => {
+  subject.error('error!!!');
 });
-
-// 「計數」按鈕事件訂閱
-fromEvent(countButton, 'click').subscribe(() => {
-  counter$.next(++counter);
-});
-
-// 「錯誤」按鈕事件訂閱
-fromEvent(errorButton, 'click').subscribe(() => {
-  const reason = prompt('請輸入錯誤訊息');
-  counter$.error(reason || 'error');
-});
-
-// 「完成」按鈕事件訂閱
-fromEvent(completeButton, 'click').subscribe(() => {
-  counter$.complete();
+const completeSub = completeButton$.subscribe(() => {
+  subject.complete();
 });
