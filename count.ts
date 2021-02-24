@@ -81,8 +81,6 @@ startButton$.subscribe(() => {
   
   // 若按下error按鈕
   errorButton$.subscribe(() => {
-    // const reason = prompt('請輸入錯誤訊息');
-    // subject.error( reason || 'error');
     subject.error('error');
     startedList.forEach( item => item.disabled = true)
     startBtnEle.disabled = false;
